@@ -1,0 +1,19 @@
+{% load static %}
+
+
+<div class="form-group form-row">
+    <img src="{% static "img/captcha/mass_captcha_1614189393.png" %}" alt="captcha" class="col-11">
+    <div class="col-1" style="padding: 0">
+        <button type="button" {% load static %} class="btn-image col">
+            <img src="{% static 'img/refresh.png' %}" alt="refresh" style="width: 24px">
+        </button>
+{#        <button type="button" {% load static %} class="btn-image col">#}
+{#            <img src="{% static 'img/volume.png' %}" alt="speaker" style="width:24px">#}
+{#        </button>#}
+    </div>
+</div>
+<div class="form-group form-row align-items-center" style="margin-top: 10px">
+    <label class="text-left" for="captcha">Type the text:</label>
+    <input type="text" name="captcha_code" style="margin-left: 10px"
+           class="col form-control" id="captcha">
+</div>
