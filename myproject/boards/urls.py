@@ -1,8 +1,14 @@
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
-from . import views
+from .views import home, external
 
 app_name = 'boards'
 urlpatterns = [
-    path('', views.home, name='home'),
+    path('', home, name='home'),
+    path('external/', external, name='external'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

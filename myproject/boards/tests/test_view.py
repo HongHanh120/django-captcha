@@ -1,7 +1,7 @@
 from django.urls import resolve, reverse
 from django.test import TestCase
 
-from myproject.boards.views import home
+from ..views import home
 
 
 class HomeTests(TestCase):

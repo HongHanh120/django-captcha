@@ -1,8 +1,12 @@
+{#{% extends 'base.html' %}#}
+
 {% load static %}
 
-
 <div class="form-group form-row">
-    <img src="{% static "img/captcha/mass_captcha_1614189393.png" %}" alt="captcha" class="col-11">
+{#    <img src="{{ image.image.url }}" class="img-fluid">#}
+{#    {% for image in images %}#}
+{#        <img src="{{ image.image.url }}" class="img-fluid">#}
+{#    {% endfor %}#}
     <div class="col-1" style="padding: 0">
         <button type="button" {% load static %} class="btn-image col">
             <img src="{% static 'img/refresh.png' %}" alt="refresh" style="width: 24px">

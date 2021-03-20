@@ -141,6 +141,10 @@ LOGOUT_REDIRECT_URL = 'boards:home'
 
 LOGIN_REDIRECT_URL = 'boards:home'
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+MEDIA_URL = '/media/'
+
 
 
 
