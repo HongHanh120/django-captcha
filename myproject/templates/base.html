@@ -48,13 +48,16 @@
                 {% endblock %}
             </ol>
             {% block content %}
-                <form action="/boards/external/" method="post">
-                    {% csrf_token %}
-                    {% if image %}
-                        <img src="/boards{{ MEDIA_URL }}{{ image.image.url }}" class="img-fluid">
-                    {% endif %}
-                    <input type="submit" value="Execute External Python script">
-                </form>
+{#                <form action="/boards/" method="post">#}
+{#                    {% csrf_token %}#}
+{#                    {% include 'includes/captcha.html'%}#}
+
+{#                    {% if image %}#}
+{#                        <img src="/boards{{ MEDIA_URL }}{{ image.image.url }}" class="img-fluid">#}
+{#                        {{ MEDIA_URL }}{{ image.image.url }}#}
+{#                    {% endif %}#}
+{#                    <input type="submit" value="Execute External Python script">#}
+{#                </form>#}
             {% endblock %}
         </div>
       {% endblock body %}
