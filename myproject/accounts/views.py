@@ -1,11 +1,14 @@
 import sys
-from django.shortcuts import render, redirect
-from django.contrib.auth import login as auth_login
-from django.contrib.auth import authenticate
-from django.template import RequestContext
+import json
 from urllib.parse import urlparse
 from subprocess import run, PIPE
+from django.contrib import messages
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render, redirect
 from django.core.files.base import ContentFile
+from django.contrib.auth import authenticate
+from django.contrib.auth import login as auth_login
+from django.contrib.auth.forms import AuthenticationForm
 
 from .forms import SignUpForm
 from .models import Image
@@ -13,7 +16,8 @@ from .models import Image
 
 # Create your views here.
 def signup(request):
-    image = upload_image(request)
+    context = upload_image(request)
+    image_url = context['image_url']
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
@@ -22,22 +26,32 @@ def signup(request):
             return redirect('boards:home')
     else:
         form = SignUpForm()
-    return render(request, 'signup.html', {'form': form, 'image': image})
+    return render(request, 'signup.html', {'form': form, 'image_url': image_url})
 
 
 def login(request):
-    image = upload_image(request)
-    username = password = ''
+    context = upload_image(request)
+    image_url = context['image_url']
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+        form = AuthenticationForm(request=request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
 
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            if user.is_active:
-                auth_login(request, user)
-                return redirect('boards:home')
-    return render(request, 'login.html', {'username': username, 'image': image})
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                if user.is_active:
+                    auth_login(request, user)
+                    messages.info(request, f"You are now logged in as {username}")
+                    return redirect('boards:home')
+            else:
+                messages.error(request, 'Invalid username or password.')
+        else:
+            messages.error(request, 'Invalid username or password.')
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'login.html', {'form': form, 'image_url': image_url})
 
 
 def upload_image(request):
@@ -63,9 +77,24 @@ def upload_image(request):
     if request.method == 'GET':
         image = Image.objects.get(text=text)
 
-    return image
+    image_url = image.image.url
+    data = {
+        'url': image_url
+    }
+    dataJSON = json.dumps(data)
+
+    context = {
+        'data': dataJSON,
+        'image_url': image_url,
+    }
+    return context
+
 
 # def display_image(request):
-#     if request.method == 'GET':
-#         image = upload_image(request)
-#     return render(request, 'includes/captcha.html', {'image': image})
+#     image = upload_image(request)
+#     print(image.image.url)
+#     data = {
+#         'url': image.image.url
+#     }
+#     dataJSON = json.dumps(data)
+#     return render(request, 'includes/captcha.html', {'data': dataJSON, 'image': image})

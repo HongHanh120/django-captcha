@@ -1,26 +1,53 @@
 {#{% extends 'base.html' %}#}
-
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 {% load static %}
 
 <div class="form-group form-row">
-    <form method = "post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" id="image-form">
         {% csrf_token %}
-        {% if image %}
-            <img class="img-responsive watch-right" alt="not found"
-                 src="/accounts{{ MEDIA_URL }}{{ image.image.url }}" class="img-fluid">
+        {% if image_url %}
+            <img class="img-responsive watch-right" alt="not found" id="captcha-image"
+                 src="{{ MEDIA_URL }}{{ image_url }}">
         {% endif %}
-        <div class="col-1" style="padding: 0">
-            <button type="submit" {% load static %} class="btn-image col">
-                <img src="{% static 'img/refresh.png' %}" alt="refresh" style="width: 24px">
+        <div class="col-1 text-center" style="margin: 5px; ">
+            <button type="submit" {% load static %} class="btn-image col" id="reload" onclick="reload_image()">
+                <img src="{% static 'img/refresh.png' %}" alt="reload" style="width:24px">
             </button>
-{#            <button type="button" {% load static %} class="btn-image col">#}
-{#                <img src="{% static 'img/volume.png' %}" alt="speaker" style="width:24px">#}
-{#            </button>#}
+            <button type="button" {% load static %} class="btn-image col" id="speaker">
+                <img src="{% static 'img/volume.png' %}" alt="speaker" style="width:24px">
+            </button>
         </div>
     </form>
 </div>
-<div class="form-group form-row align-items-center" style="margin-top: 10px">
-    <label class="text-left" for="captcha">Type the text:</label>
+<div class="form-group align-items-center" style="display:flex; flex-direction: row">
+    <label class="text-left" for="type-the-captcha" style="clear: both;">Captcha:</label>
     <input type="text" name="captcha_code" style="margin-left: 10px"
-           class="col form-control" id="captcha">
+           class="form-control col-form-label-sm" id="type-the-captcha">
 </div>
+
+<script type="text/javascript">
+    function reload_image() {
+        let data = JSON.parse("{{ data|escapejs }}")
+        {#let data = new FormData($('image-form').get('0'))#}
+        $.ajax({
+            url: '',
+            type: "POST",
+            data: {
+                data: data,
+                csrfmiddlewaretoken: {{ csrf_token }},
+            },
+            processData: false,
+            contentType: false,
+            success: function () {
+                data = JSON.parse(JSON.stringify(data))
+                $("#captcha-image").html('<img src="'+ data.url +'"/>');
+                console.log("success");
+            },
+            error: function (xhr, errmsg, err) {
+                console.log(xhr.status + ": " + xhr.responseText)
+            }
+        });
+    }
+
+</script>
+

@@ -1,6 +1,6 @@
 {% extends 'base_accounts.html' %}
 
-{#{% load static %}#}
+{% load static %}
 {##}
 {#{% block stylesheet %}#}
 {#    <link rel="stylesheet" href="{% static 'css/accounts.css' %}">#}
@@ -18,10 +18,10 @@
                 <div class="card">
                     <div class="card-body">
                         <h3 class="card-title">Sign up</h3>
-                        <form method="post" novalidate>
+                        <form method="post" novalidate action="/signup/">
                             {% csrf_token %}
                             {% include 'includes/form.html' %}
-                            {% include 'includes/captcha.html' %}
+{#                            {% include 'includes/captcha.html' %}#}
                             <button type="submit" class="btn btn-primary">Create an account</button>
                         </form>
                     </div>

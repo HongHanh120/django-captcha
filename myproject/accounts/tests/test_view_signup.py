@@ -18,7 +18,7 @@ class SignUpTests(TestCase):
         self.assertEquals(self.response.status_code, 200)
 
     def test_signup_url_resolves_signup_view(self):
-        view = resolve('/accounts/signup/')
+        view = resolve('/signup/')
         self.assertEquals(view.func, signup)
 
     def test_csrf(self):
@@ -30,10 +30,10 @@ class SignUpTests(TestCase):
 
     def test_form_inputs(self):
         '''
-                The view must contain five inputs: csrf, username, email,
-                password1, password2
+                The view must contain seven inputs: 2 csrf, username, email,
+                password1, password2, captcha_text
         '''
-        self.assertContains(self.response, '<input', 6)
+        self.assertContains(self.response, '<input', 7)
         self.assertContains(self.response, 'type="text"', 2)
         self.assertContains(self.response, 'type="email"', 1)
         self.assertContains(self.response, 'type="password"', 2)
@@ -71,7 +71,7 @@ class InvalidSignUpTests(TestCase):
     def test_signup_status_code(self):
         self.assertEquals(self.response.status_code, 200)
 
-    def test_from_errors(self):
+    def test_form_errors(self):
         form = self.response.context.get('form')
         self.assertTrue(form.errors)
 

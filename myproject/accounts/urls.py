@@ -11,7 +11,8 @@ urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('login/', views.login, name='login'),
-    # path('', views.upload_and_display_image, name='display')
+    # path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    # path('captcha/', views.upload_image, name='display')
 ]
 
 if settings.DEBUG:
