@@ -3,14 +3,14 @@
 {% load static %}
 
 <div class="form-group form-row">
-    <form method="post" enctype="multipart/form-data" id="image-form">
+    <form method="post" enctype="multipart/form-data" id="image-form" action="/login/captcha/">
         {% csrf_token %}
         {% if image_url %}
             <img class="img-responsive watch-right" alt="not found" id="captcha-image"
                  src="{{ MEDIA_URL }}{{ image_url }}">
         {% endif %}
         <div class="col-1 text-center" style="margin: 5px; ">
-            <button type="submit" {% load static %} class="btn-image col" id="reload" onclick="reload_image()">
+            <button type="submit" {% load static %} class="btn-image col" id="reload" name="reload">
                 <img src="{% static 'img/refresh.png' %}" alt="reload" style="width:24px">
             </button>
             <button type="button" {% load static %} class="btn-image col" id="speaker">
@@ -26,15 +26,47 @@
 </div>
 
 <script type="text/javascript">
-    function reload_image() {
+    // using jQuery
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    var csrftoken = getCookie('csrftoken');
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+    $(document).ready(function () {
+        $('#image-form').submit(function (e) {
+        e.preventDefault();
         let data = JSON.parse("{{ data|escapejs }}")
-        {#let data = new FormData($('image-form').get('0'))#}
+        {#let data = new FormData($('#image-form')['0'])#}
+        console.log(data)
+
         $.ajax({
-            url: '',
+            url: "{% url 'accounts:display' %}",
             type: "POST",
             data: {
                 data: data,
-                csrfmiddlewaretoken: {{ csrf_token }},
+                {#csrfmiddlewaretoken: {{ csrf_token }},#}
             },
             processData: false,
             contentType: false,
@@ -47,7 +79,9 @@
                 console.log(xhr.status + ": " + xhr.responseText)
             }
         });
-    }
+        return false;
+    })
+    })
 
 </script>
 

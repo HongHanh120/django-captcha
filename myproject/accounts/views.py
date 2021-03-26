@@ -90,11 +90,13 @@ def upload_image(request):
     return context
 
 
-# def display_image(request):
-#     image = upload_image(request)
-#     print(image.image.url)
-#     data = {
-#         'url': image.image.url
-#     }
-#     dataJSON = json.dumps(data)
-#     return render(request, 'includes/captcha.html', {'data': dataJSON, 'image': image})
+def display_image(request):
+    context = upload_image(request)
+    # print(context['image_url'])
+    image_url = context['image_url']
+    print(image_url)
+    data = {
+        'url': image_url
+    }
+    dataJSON = json.dumps(data)
+    return render(request, 'includes/captcha.html', {'data': dataJSON, 'image_url': image_url})
