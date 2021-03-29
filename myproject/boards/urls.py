@@ -8,7 +8,4 @@ from .views import home
 app_name = 'boards'
 urlpatterns = [
     path('', home, name='home'),
-    # path('external/', external, name="external")
 ]
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

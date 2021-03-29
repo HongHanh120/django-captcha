@@ -7,8 +7,6 @@ from urllib.parse import urlparse
 from subprocess import run, PIPE
 from django.core.files.base import ContentFile
 
-from .models import Image
-
 
 def home(request):
     # image = external(request)

@@ -1,20 +1,19 @@
 {#{% extends 'base.html' %}#}
+
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
 {% load static %}
 
-<div class="form-group form-row">
-    <form method="post" enctype="multipart/form-data" id="image-form" action="/login/captcha/">
+<div class="form-group form-row" id="captcha-div">
+    <form method="get" enctype="multipart/form-data" id="image-form">
         {% csrf_token %}
         {% if image_url %}
             <img class="img-responsive watch-right" alt="not found" id="captcha-image"
                  src="{{ MEDIA_URL }}{{ image_url }}">
         {% endif %}
         <div class="col-1 text-center" style="margin: 5px; ">
-            <button type="submit" {% load static %} class="btn-image col" id="reload" name="reload">
+            <button type="button" {% load static %} class="btn-image col" id="reload" name="reload">
                 <img src="{% static 'img/refresh.png' %}" alt="reload" style="width:24px">
-            </button>
-            <button type="button" {% load static %} class="btn-image col" id="speaker">
-                <img src="{% static 'img/volume.png' %}" alt="speaker" style="width:24px">
             </button>
         </div>
     </form>
@@ -48,40 +47,56 @@
         return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
     }
     $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
+        beforeSend: function (xhr, settings) {
             if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
                 xhr.setRequestHeader("X-CSRFToken", csrftoken);
             }
         }
     });
-    $(document).ready(function () {
-        $('#image-form').submit(function (e) {
-        e.preventDefault();
-        let data = JSON.parse("{{ data|escapejs }}")
-        {#let data = new FormData($('#image-form')['0'])#}
-        console.log(data)
 
-        $.ajax({
-            url: "{% url 'accounts:display' %}",
-            type: "POST",
-            data: {
-                data: data,
-                {#csrfmiddlewaretoken: {{ csrf_token }},#}
-            },
-            processData: false,
-            contentType: false,
-            success: function () {
-                data = JSON.parse(JSON.stringify(data))
-                $("#captcha-image").html('<img src="'+ data.url +'"/>');
-                console.log("success");
-            },
-            error: function (xhr, errmsg, err) {
-                console.log(xhr.status + ": " + xhr.responseText)
-            }
-        });
-        return false;
-    })
-    })
+
+    {#$(document).ready(function () {#}
+    {#   $('#image-form').submit(function (e) {#}
+    {#       e.preventDefault();#}
+    {#       let data = JSON.parse("{{ data|escapejs }}")#}
+    {#       console.log(data.url)#}
+    {#       $.ajax({#}
+    {#           url: "{% url 'captchaimages:external' %}",#}
+    {#           type: "GET",#}
+    {#           data: {#}
+    {#               data: data,#}
+    {#           },#}
+    {#           success: function () {#}
+    {#               $("#captcha-image").replaceWith('<img src="'+ data.url +'"/>');#}
+    {#               console.log("success");#}
+    {#           },#}
+    {#           error: function (xhr, errmsg, err) {#}
+    {#               console.log(xhr.status + ": " + xhr.responseText)#}
+    {#           }#}
+    {#       });#}
+    {#       return false;#}
+    {#   });#}
+
+    $(function () {
+        $("#reload").click(function (event) {
+            event.preventDefault();
+            var form = new FormData();
+            console.log(form)
+            {#var data = JSON.parse("{{ data|escapejs }}")#}
+            {#console.log(data)#}
+            $.ajax({
+                type: "GET",
+                url: "{% url 'captchaimages:external' %}",
+                success: function () {
+                    {#$("#captcha-image").html('<img src="' + data.url + '"/>');#}
+                    {#$("#captcha-image").attr('src', '/media/images/mass_captcha_' + date.getTime() + '.png')#}
+                    $("#captcha-image").attr('src', data.url)
+                    console.log("success");
+                },
+            })
+        })
+    });
+
 
 </script>
 

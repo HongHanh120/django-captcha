@@ -22,5 +22,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('accounts.urls')),
     path('boards/', include('boards.urls')),
+    path('captcha/', include('captchaimages.urls'))
 
 ]

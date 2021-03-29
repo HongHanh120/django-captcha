@@ -31,6 +31,7 @@ def signup(request):
 
 def login(request):
     context = upload_image(request)
+    dataJSON = context['data']
     image_url = context['image_url']
     if request.method == 'POST':
         form = AuthenticationForm(request=request, data=request.POST)
@@ -51,7 +52,7 @@ def login(request):
     else:
         form = AuthenticationForm()
 
-    return render(request, 'login.html', {'form': form, 'image_url': image_url})
+    return render(request, 'login.html', {'form': form, 'image_url': image_url, 'data': dataJSON})
 
 
 def upload_image(request):
@@ -86,17 +87,20 @@ def upload_image(request):
     context = {
         'data': dataJSON,
         'image_url': image_url,
+        'name': name,
     }
     return context
 
 
 def display_image(request):
     context = upload_image(request)
-    # print(context['image_url'])
     image_url = context['image_url']
-    print(image_url)
+    # print(image_url)
+    name = context['name']
     data = {
-        'url': image_url
+        'url': image_url,
+        'name': name,
     }
     dataJSON = json.dumps(data)
+
     return render(request, 'includes/captcha.html', {'data': dataJSON, 'image_url': image_url})
