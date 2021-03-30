@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect
-from django.template.response import TemplateResponse
 from django.http import HttpResponse, JsonResponse
 
 import sys
@@ -11,7 +10,6 @@ from .models import Image
 
 
 def home(request):
-    # image = external(request)
     return render(request, "base.html")
 
 

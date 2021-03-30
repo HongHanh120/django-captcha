@@ -1,75 +1,8 @@
 {% extends 'base_accounts.html' %}
 
-{#<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>#}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
 {% load static %}
-
-<script type="text/javascript">
-    {#function reload_image() {#}
-    {#    let data = JSON.parse("{{ data|escapejs }}")#}
-    {#    $.ajax({#}
-    {#        url: '/login/',#}
-    {#        type: "POST",#}
-    {#        data: {#}
-    {#            data: data,#}
-    {#            csrfmiddlewaretoken: {{ csrf_token }},#}
-    {#        },#}
-    {#        processData: false,#}
-    {#        contentType: false,#}
-    {#        success: function () {#}
-    {#            data = JSON.parse(JSON.stringify(data))#}
-    {#            $("#captcha-image").html('<img src="' + data.url + '"/>');#}
-    {#            console.log("success");#}
-    {#        },#}
-    {#        error: function (xhr, errmsg, err) {#}
-    {#            console.log(xhr.status + ": " + xhr.responseText)#}
-    {#        }#}
-    {#    })#}
-
-    {#$(function () {#}
-    {#    $("#reload-image-button").click(function (event) {#}
-    {#        let data = JSON.parse("{{ data|escapejs }}")#}
-    {#        console.log(data.url)#}
-    {#        $.ajax({#}
-    {#            type: "POST",#}
-                {#url: '/login/',#}
-    {#            success: function (response) {#}
-    {#                $("#captcha-image").html('<img src="' + data.url + '"/>');#}
-    {#                console.log("success");#}
-    {#            },#}
-    {#        });#}
-    {#        event.preventDefault();#}
-    {#    })#}
-
-    $(document).ready(function () {
-        $('#captcha-form').on("submit", function (e) {
-            e.preventDefault();
-            let data = JSON.parse("{{ data|escapejs }}")
-            {#let data = new FormData($('#image-form')['0'])#}
-            console.log(data.url)
-
-            $.ajax({
-                type: "POST",
-                url: "{% url 'accounts:login' %}",
-                data: {
-                    data: data,
-                    csrfmiddlewaretoken: {{ csrf_token }},
-                },
-                success: function () {
-                    data = JSON.parse(data)
-                    $("#captcha-image").html('<img src="'+ data.url +'"/>');
-                    console.log("success");
-                },
-                error: function (xhr, errmsg, err) {
-                    console.log(xhr.status + ": " + xhr.responseText)
-                }
-            });
-            return false;
-        })
-    });
-</script>
-
-{% block title %}Log in to Django Boards{% endblock %}
 
 {% block content %}
     <div class="row justify-content-center">
@@ -77,38 +10,13 @@
             <div class="card">
                 <div class="card-body">
                     <h3 class="card-title">Log in</h3>
-{#                    <div id="login-div">#}
-                        <form method="post" novalidate id="login-form" action="/login/">
-                            {% csrf_token %}
-                            {% include 'includes/form.html' %}
-                        </form>
-{#                    </div>#}
-{#                    <div id="captcha-div">#}
-                        <form enctype="multipart/form-data" id="captcha-form" method="get">
-                            <div class="form-row" id="captcha-div">
-                                {% csrf_token %}
-                                {% if image_url %}
-                                    <img class="img-responsive watch-right" alt="not found" id="captcha-image"
-                                         src="{{ MEDIA_URL }}{{ image_url }}">
-                                {% endif %}
-                                <div class="col-1 text-center" style="margin: 5px; ">
-                                    <button {% load static %} class="btn-image col" id="reload-image-button"
-                                            name="reload-image-button" value="reload-image-button" form="captcha-form">
-                                        <img src="{% static 'img/refresh.png' %}" alt="reload" style="width:24px">
-                                    </button>
-    {#                                    <button type="button" {% load static %} class="btn-image col" id="speaker">#}
-    {#                                        <img src="{% static 'img/volume.png' %}" alt="speaker" style="width:24px">#}
-    {#                                    </button>#}
-                                </div>
-                            </div>
-                            <div class="form-group align-items-center" style="display:flex; flex-direction: row">
-                                <label class="text-left" for="type-the-captcha" style="clear: both;">Captcha:</label>
-                                <input type="text" name="captcha_code" style="margin-left: 10px"
-                                       class="form-control col-form-label-sm" id="type-the-captcha">
-                            </div>
-                        </form>
-{#                    </div>#}
-                    <button type="submit" class="btn btn-primary btn-block" id="login-button" name="login-button" value="login-button" form="login-form">
+                    <form method="post" novalidate id="login-form" action="/login/">
+                        {% csrf_token %}
+                        {% include 'includes/form.html' %}
+                    </form>
+                    {% include 'includes/captcha.html' %}
+                    <button type="submit" class="btn btn-primary btn-block" id="login-button"
+                            name="login-button" value="login-button" form="login-form">
                         Log in
                     </button>
                 </div>
@@ -119,5 +27,6 @@
         </div>
     </div>
 {% endblock %}
+
 
 

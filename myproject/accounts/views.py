@@ -16,8 +16,13 @@ from .models import Image
 
 # Create your views here.
 def signup(request):
-    context = upload_image(request)
-    image_url = context['image_url']
+    image = upload_image(request)
+    image_url = image.image.url
+
+    if request.method == "GET":
+        if request.is_ajax():
+            return JsonResponse({'image_url': image_url}, safe=False)
+
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
@@ -30,9 +35,13 @@ def signup(request):
 
 
 def login(request):
-    context = upload_image(request)
-    dataJSON = context['data']
-    image_url = context['image_url']
+    image = upload_image(request)
+    image_url = image.image.url
+
+    if request.method == "GET":
+        if request.is_ajax():
+            return JsonResponse({'image_url': image_url}, safe=False)
+
     if request.method == 'POST':
         form = AuthenticationForm(request=request, data=request.POST)
         if form.is_valid():
@@ -52,7 +61,7 @@ def login(request):
     else:
         form = AuthenticationForm()
 
-    return render(request, 'login.html', {'form': form, 'image_url': image_url, 'data': dataJSON})
+    return render(request, 'login.html', {'form': form, 'image_url': image.image.url})
 
 
 def upload_image(request):
@@ -75,32 +84,18 @@ def upload_image(request):
         image_data = f.read()
     image.image.save(name, ContentFile(image_data))
 
-    if request.method == 'GET':
-        image = Image.objects.get(text=text)
-
-    image_url = image.image.url
-    data = {
-        'url': image_url
-    }
-    dataJSON = json.dumps(data)
-
-    context = {
-        'data': dataJSON,
-        'image_url': image_url,
-        'name': name,
-    }
-    return context
+    return image
 
 
-def display_image(request):
-    context = upload_image(request)
-    image_url = context['image_url']
-    # print(image_url)
-    name = context['name']
-    data = {
-        'url': image_url,
-        'name': name,
-    }
-    dataJSON = json.dumps(data)
-
-    return render(request, 'includes/captcha.html', {'data': dataJSON, 'image_url': image_url})
+# def display_image(request):
+#     image = upload_image(request)
+#     image_url = image.image.url
+#
+#     if request.method == "GET":
+#         if request.is_ajax():
+#             return JsonResponse({'image_url': image_url}, safe=False)
+#         else:
+#             context = {
+#                 'image_url': image_url
+#             }
+#             return render(request, 'includes/captcha.html', context)

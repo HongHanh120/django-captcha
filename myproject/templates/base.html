@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>{% block title %}Django Boards{% endblock %}</title>
+{#    <title>{% block title %}Django Boards{% endblock %}</title>#}
     <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 
@@ -54,16 +54,6 @@
                 {% endblock %}
             </ol>
             {% block content %}
-{#                <form action="/boards/" method="post">#}
-{#                    {% csrf_token %}#}
-{#                    {% include 'includes/captcha.html'%}#}
-
-{#                    {% if image %}#}
-{#                        <img src="/boards{{ MEDIA_URL }}{{ image.image.url }}" class="img-fluid">#}
-{#                        {{ MEDIA_URL }}{{ image.image.url }}#}
-{#                    {% endif %}#}
-{#                    <input type="submit" value="Execute External Python script">#}
-{#                </form>#}
             {% endblock %}
         </div>
       {% endblock body %}

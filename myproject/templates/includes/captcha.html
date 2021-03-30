@@ -57,9 +57,11 @@
     $(function () {
         $("#reload").click(function (event) {
             event.preventDefault();
+            var path = window.location.href;
+            console.log(path);
             $.ajax({
                 type: "GET",
-                url: "{% url 'captchaimages:display' %}",
+                url: path,
                 success: function (response) {
                     console.log(response.image_url)
                     $("#captcha-image").attr('src', response.image_url)
@@ -68,7 +70,5 @@
             })
         })
     });
-
-
 </script>
 
