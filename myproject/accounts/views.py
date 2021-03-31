@@ -3,7 +3,7 @@ import json
 from urllib.parse import urlparse
 from subprocess import run, PIPE
 from django.contrib import messages
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.core.files.base import ContentFile
 from django.contrib.auth import authenticate
@@ -19,10 +19,6 @@ def signup(request):
     image = upload_image(request)
     image_url = image.image.url
 
-    if request.method == "GET":
-        if request.is_ajax():
-            return JsonResponse({'image_url': image_url}, safe=False)
-
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
@@ -30,7 +26,10 @@ def signup(request):
             auth_login(request, user)
             return redirect('boards:home')
     else:
+        # request.method GET
         form = SignUpForm()
+        if request.is_ajax():
+            return JsonResponse({'image_url': image_url}, safe=False)
     return render(request, 'signup.html', {'form': form, 'image_url': image_url})
 
 
@@ -38,12 +37,9 @@ def login(request):
     image = upload_image(request)
     image_url = image.image.url
 
-    if request.method == "GET":
-        if request.is_ajax():
-            return JsonResponse({'image_url': image_url}, safe=False)
-
     if request.method == 'POST':
         form = AuthenticationForm(request=request, data=request.POST)
+        print(form)
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
@@ -59,8 +55,10 @@ def login(request):
         else:
             messages.error(request, 'Invalid username or password.')
     else:
+        # request.method GET
         form = AuthenticationForm()
-
+        if request.is_ajax():
+            return JsonResponse({'image_url': image_url}, safe=False)
     return render(request, 'login.html', {'form': form, 'image_url': image.image.url})
 
 
@@ -85,7 +83,6 @@ def upload_image(request):
     image.image.save(name, ContentFile(image_data))
 
     return image
-
 
 # def display_image(request):
 #     image = upload_image(request)

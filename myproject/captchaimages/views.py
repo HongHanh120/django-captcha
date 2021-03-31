@@ -2,11 +2,13 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 
 import sys
+import bcrypt
 from urllib.parse import urlparse
 from subprocess import run, PIPE
 from django.core.files.base import ContentFile
 
 from .models import Image
+from .forms import CaptchaForm
 
 
 def home(request):
@@ -38,13 +40,30 @@ def upload(request):
 def display(request):
     image = upload(request)
     image_url = image.image.url
-
+    hashed_captcha = image.text
+    print(hashed_captcha.encode())
+    if request.method == "POST":
+        form = CaptchaForm(data=request.POST)
+        print(form)
+        if form.is_valid():
+            captcha_text = form.cleaned_data.get('captcha')
+            print(captcha_text.encode())
+            if bcrypt.checkpw(captcha_text.encode(), hashed_captcha.encode()):
+                print("match")
+            else:
+                print("not match")
+        return redirect('captchaimages:display')
     if request.method == "GET":
+        form = CaptchaForm()
         if request.is_ajax():
             return JsonResponse({'image_url': image_url}, safe=False)
-        else:
-            context = {
-                'image_url': image_url
-            }
-            return render(request, 'includes/captcha.html', context)
+        context = {
+            'image_url': image_url,
+            'form': form,
+        }
+        return render(request, 'includes/captcha.html', context)
+
+    return redirect('captchaimages:display')
+
+
 
