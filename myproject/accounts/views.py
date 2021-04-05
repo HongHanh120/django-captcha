@@ -1,5 +1,4 @@
 import sys
-import json
 from urllib.parse import urlparse
 from subprocess import run, PIPE
 from django.contrib import messages
@@ -63,7 +62,7 @@ def login(request):
 
 
 def upload_image(request):
-    out = run([sys.executable, '//home//hanh//Desktop//captcha//mass_captcha//generate_mass_captcha.py'],
+    out = run([sys.executable, '//home//hanh//Desktop//captcha//sources//generate_mass_captcha.py'],
               shell=False,
               stdout=PIPE)
 

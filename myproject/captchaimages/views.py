@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 
+import json
+import requests
+
 import sys
 import bcrypt
 from urllib.parse import urlparse
@@ -16,54 +19,46 @@ def home(request):
 
 
 def upload(request):
-    out = run([sys.executable, '//home//hanh//Desktop//captcha//mass_captcha//generate_mass_captcha.py'], shell=False,
-              stdout=PIPE)
+    r = requests.get('http://127.0.0.1:8000/data/')
+    data = json.loads(json.dumps(r.json()))['data']
+    remote_image_url = data['remote_url']
+    remote_image_id = data['remote_id']
 
-    data = "".join(map(chr, out.stdout)).split('\n')
-    for obj in data:
-        if obj == '':
-            data.remove(obj)
+    # print(data['data'])
 
-    text = data[0]
-    remote_image_url = data[1]
-
-    image = Image(text=text)
+    image = Image(remote_id=remote_image_id)
     name = urlparse(remote_image_url).path.split('/')[-1]
 
     with open(remote_image_url, 'rb') as f:
         image_data = f.read()
     image.image.save(name, ContentFile(image_data))
 
-    return image
+    return JsonResponse(r.json())
 
 
-def display(request):
-    image = upload(request)
-    image_url = image.image.url
-    hashed_captcha = image.text
-    print(hashed_captcha.encode())
-    if request.method == "POST":
-        form = CaptchaForm(data=request.POST)
-        print(form)
-        if form.is_valid():
-            captcha_text = form.cleaned_data.get('captcha')
-            print(captcha_text.encode())
-            if bcrypt.checkpw(captcha_text.encode(), hashed_captcha.encode()):
-                print("match")
-            else:
-                print("not match")
-        return redirect('captchaimages:display')
-    if request.method == "GET":
-        form = CaptchaForm()
-        if request.is_ajax():
-            return JsonResponse({'image_url': image_url}, safe=False)
-        context = {
-            'image_url': image_url,
-            'form': form,
-        }
-        return render(request, 'includes/captcha.html', context)
-
-    return redirect('captchaimages:display')
-
-
-
+# def display(request):
+#     image = upload(request)
+#     image_url = image.image.url
+#     hashed_captcha = image.text
+#     print(hashed_captcha.encode())
+#
+#     if request.method == "GET":
+#         form = CaptchaForm()
+#         if request.is_ajax():
+#             return JsonResponse({'image_url': image_url}, safe=False)
+#         context = {
+#             'image_url': image_url,
+#             'form': form,
+#         }
+#         return render(request, 'includes/captcha.html', context)
+#     if request.method == "POST":
+#         form = CaptchaForm(data=request.POST)
+#         if form.is_valid():
+#             captcha_text = form.cleaned_data.get('captcha')
+#             if bcrypt.checkpw(captcha_text.encode(), image.text.encode()):
+#                 print("match")
+#             else:
+#                 print(captcha_text.encode(), image.text.encode())
+#         return redirect('captchaimages:display')
+#
+#     return redirect('captchaimages:display')
