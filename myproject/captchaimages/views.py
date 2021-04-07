@@ -1,13 +1,8 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse, JsonResponse
-
 import json
 import requests
-
-import sys
-import bcrypt
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
 from urllib.parse import urlparse
-from subprocess import run, PIPE
 from django.core.files.base import ContentFile
 
 from .models import Image
@@ -33,32 +28,52 @@ def upload(request):
         image_data = f.read()
     image.image.save(name, ContentFile(image_data))
 
-    return JsonResponse(r.json())
+    return image
 
 
-# def display(request):
-#     image = upload(request)
-#     image_url = image.image.url
-#     hashed_captcha = image.text
-#     print(hashed_captcha.encode())
-#
-#     if request.method == "GET":
-#         form = CaptchaForm()
-#         if request.is_ajax():
-#             return JsonResponse({'image_url': image_url}, safe=False)
-#         context = {
-#             'image_url': image_url,
-#             'form': form,
-#         }
-#         return render(request, 'includes/captcha.html', context)
-#     if request.method == "POST":
-#         form = CaptchaForm(data=request.POST)
-#         if form.is_valid():
-#             captcha_text = form.cleaned_data.get('captcha')
-#             if bcrypt.checkpw(captcha_text.encode(), image.text.encode()):
-#                 print("match")
-#             else:
-#                 print(captcha_text.encode(), image.text.encode())
-#         return redirect('captchaimages:display')
-#
-#     return redirect('captchaimages:display')
+def display(request):
+    if request.method == "GET":
+        image = upload(request)
+        image_url = image.image.url
+        request.session['remote_id'] = image.remote_id
+        form = CaptchaForm()
+        if request.is_ajax():
+            return JsonResponse({'image_url': image_url}, safe=False)
+        context = {
+            'image_url': image_url,
+            'form': form,
+        }
+        return render(request, 'includes/captcha.html', context)
+
+    if request.method == "POST":
+        form = CaptchaForm(data=request.POST)
+        if form.is_valid():
+            response = form.cleaned_data.get('captcha')
+            remote_image_id = request.session['remote_id']
+
+            data = json.dumps({
+                'response': response,
+                'remote_image_id': remote_image_id,
+            })
+            print(data)
+
+            headers = {
+                'Content-type': 'application/json',
+                'Accept': 'text/plain'
+            }
+
+            try:
+                response = requests.post('http://127.0.0.1:8000/check/', data=data, headers=headers)
+                response.raise_for_status()
+                response_json = response.json()
+                print(response_json)
+
+            except requests.HTTPError as http_err:
+                print(f'HTTP error occurred: {http_err}')
+            except Exception as err:
+                print(f'Other error occurred: {err}')
+            else:
+                print('Success!')
+
+            # return JsonResponse({'data': data}, safe=False)
+        return redirect('captchaimages:display')
