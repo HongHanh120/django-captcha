@@ -55,7 +55,7 @@ def display(request):
                 'response': response,
                 'remote_image_id': remote_image_id,
             })
-            print(data)
+            # print(data)
 
             headers = {
                 'Content-type': 'application/json',
@@ -66,14 +66,17 @@ def display(request):
                 response = requests.post('http://127.0.0.1:8000/check/', data=data, headers=headers)
                 response.raise_for_status()
                 response_json = response.json()
-                print(response_json)
+                result = response_json['result']
+                print(result)
+
+                # if request.is_ajax():
+                #     return JsonResponse({'result': result})
 
             except requests.HTTPError as http_err:
                 print(f'HTTP error occurred: {http_err}')
             except Exception as err:
                 print(f'Other error occurred: {err}')
-            else:
-                print('Success!')
+            # else:
+            #     print('Success!')
 
-            # return JsonResponse({'data': data}, safe=False)
         return redirect('captchaimages:display')
