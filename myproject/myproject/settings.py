@@ -145,7 +145,7 @@ LOGIN_REDIRECT_URL = 'boards:home'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MEDIA_URL = '/media/'
-
+# MEDIA_URL = '/home/hanh/Desktop/generate/generate_captcha/images/mass/'
 
 
 

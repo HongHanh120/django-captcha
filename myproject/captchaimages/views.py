@@ -13,17 +13,16 @@ def home(request):
     return render(request, "base.html")
 
 
-def upload(request):
-    r = requests.get('http://127.0.0.1:8000/data/')
+def get_captcha_image(request):
+    r = requests.get('http://127.0.0.1:8000/generate-image/')
     data = json.loads(json.dumps(r.json()))['data']
     remote_image_url = data['remote_url']
     remote_image_id = data['remote_id']
 
     # print(data['data'])
-
     image = Image(remote_id=remote_image_id)
     name = urlparse(remote_image_url).path.split('/')[-1]
-
+    #
     with open(remote_image_url, 'rb') as f:
         image_data = f.read()
     image.image.save(name, ContentFile(image_data))
@@ -31,11 +30,12 @@ def upload(request):
     return image
 
 
-def display(request):
+def display_image(request):
     if request.method == "GET":
-        image = upload(request)
+        image = get_captcha_image(request)
         image_url = image.image.url
         request.session['remote_id'] = image.remote_id
+
         form = CaptchaForm()
         if request.is_ajax():
             return JsonResponse({'image_url': image_url}, safe=False)
@@ -56,27 +56,21 @@ def display(request):
                 'remote_image_id': remote_image_id,
             })
             # print(data)
-
             headers = {
                 'Content-type': 'application/json',
                 'Accept': 'text/plain'
             }
 
             try:
-                response = requests.post('http://127.0.0.1:8000/check/', data=data, headers=headers)
+                response = requests.post('http://127.0.0.1:8000/check-answer/', data=data, headers=headers)
                 response.raise_for_status()
                 response_json = response.json()
                 result = response_json['result']
                 print(result)
 
-                # if request.is_ajax():
-                #     return JsonResponse({'result': result})
-
             except requests.HTTPError as http_err:
                 print(f'HTTP error occurred: {http_err}')
             except Exception as err:
                 print(f'Other error occurred: {err}')
-            # else:
-            #     print('Success!')
 
         return redirect('captchaimages:display')

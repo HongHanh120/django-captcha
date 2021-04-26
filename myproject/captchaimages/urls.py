@@ -9,9 +9,8 @@ from .views import *
 app_name = 'captchaimages'
 urlpatterns = [
     path('', csrf_exempt(home), name='home'),
-    # path('upload/', upload, name='upload'),
-    path('display/', csrf_exempt(display), name='display'),
-    path('submit/', csrf_exempt(TemplateView.as_view(template_name='includes/captcha.html')), name='submit'),
+    path('display-image/', csrf_exempt(display_image), name='display'),
+    path('send-answer/', csrf_exempt(TemplateView.as_view(template_name='includes/captcha.html')), name='submit'),
 
 ]
 if settings.DEBUG:

@@ -62,28 +62,11 @@
                 type: "GET",
                 url: path,
                 success: function (response) {
-                    {#console.log(response.image_url)#}
                     $("#captcha-image").attr('src', response.image_url)
                     console.log("success");
                 },
             })
         })
     });
-
-    {#$(function () {#}
-    {#    $("#submit").click(function (event) {#}
-    {#        event.preventDefault();#}
-    {#        var path = window.location.href;#}
-            {#console.log(path);#}
-    {#        $.ajax({#}
-    {#            type: "POST",#}
-    {#            url: path,#}
-    {#            success: function (response) {#}
-    {#                console.log(response.result)#}
-    {#                alert(response.result);#}
-    {#            },#}
-    {#        })#}
-    {#    })#}
-
 </script>
 
