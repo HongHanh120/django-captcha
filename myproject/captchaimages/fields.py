@@ -6,5 +6,5 @@ class CaptchaAnswerInput(TextInput):
         attrs = super(CaptchaAnswerInput, self).build_attrs(*args, **kwargs)
         attrs["autocapitalize"] = "off"
         attrs["autocomplete"] = "off"
-        # attrs["autocorrect"] = "off"
+        attrs["autocorrect"] = "off"
         return attrs

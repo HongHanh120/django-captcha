@@ -13,6 +13,9 @@
                         {% include 'includes/form.html' %}
                     </form>
                     {% include 'includes/captcha.html' %}
+                    <form method="post" novalidate id="captcha-form" action="/signup/">
+                        {% csrf_token %}
+                    </form>
                     <button type="submit" class="btn btn-primary" id="signup-button"
                             name="signup-button" value="signup-button" form="signup-form">
                         Create an account

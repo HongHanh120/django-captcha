@@ -10,21 +10,22 @@
             <div class="card">
                 <div class="card-body">
                     <h3 class="card-title">Log in</h3>
-                    <form method="post" novalidate id="login-form" action="/login/">
+                    <form method="post" novalidate id="login-form">
                         {% csrf_token %}
                         {% include 'includes/form.html' %}
-                    </form>
-{#                    <form method="post" enctype="multipart/form-data" id="image-form">#}
-{#                        {% csrf_token %}#}
+{#                        {{ form.as_p }}#}
                         {% include 'includes/captcha.html' %}
-{#                    </form>#}
+{#                        {{ captcha_form.as_p }}#}
+                        {% include 'includes/captcha_form.html' %}
+                    </form>
+
                     <button type="submit" class="btn btn-primary btn-block" id="login-button"
                             name="login-button" value="login-button" form="login-form">
                         Log in
                     </button>
                 </div>
                 <div class="card-footer text-muted text-center">
-                    New to Django Boards? <a href="{% url 'accounts:signup' %}">Sign up</a>
+                    New to Boards? <a href="{% url 'accounts:signup' %}">Sign up</a>
                 </div>
             </div>
         </div>

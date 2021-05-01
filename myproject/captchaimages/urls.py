@@ -9,7 +9,7 @@ from .views import *
 app_name = 'captchaimages'
 urlpatterns = [
     path('', csrf_exempt(home), name='home'),
-    path('display-image/', csrf_exempt(display_image), name='display'),
+    path('display-image/', display_image, name='display'),
     path('send-answer/', csrf_exempt(TemplateView.as_view(template_name='includes/captcha.html')), name='submit'),
 
 ]

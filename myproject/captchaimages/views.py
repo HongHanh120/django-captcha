@@ -14,7 +14,7 @@ def home(request):
 
 
 def get_captcha_image(request):
-    r = requests.get('http://127.0.0.1:8000/generate-image/')
+    r = requests.get('http://127.0.0.1:8000/api/generate-image/')
     data = json.loads(json.dumps(r.json()))['data']
     remote_image_url = data['remote_url']
     remote_image_id = data['remote_id']
@@ -48,11 +48,11 @@ def display_image(request):
     if request.method == "POST":
         form = CaptchaForm(data=request.POST)
         if form.is_valid():
-            response = form.cleaned_data.get('captcha')
+            answer = form.cleaned_data.get('captcha')
             remote_image_id = request.session['remote_id']
 
             data = json.dumps({
-                'response': response,
+                'answer': answer,
                 'remote_image_id': remote_image_id,
             })
             # print(data)
@@ -62,7 +62,7 @@ def display_image(request):
             }
 
             try:
-                response = requests.post('http://127.0.0.1:8000/check-answer/', data=data, headers=headers)
+                response = requests.post('http://127.0.0.1:8000/api/check-answer/', data=data, headers=headers)
                 response.raise_for_status()
                 response_json = response.json()
                 result = response_json['result']
