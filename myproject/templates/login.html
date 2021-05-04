@@ -14,19 +14,26 @@
                         {% csrf_token %}
                         {% include 'includes/form.html' %}
 {#                        {{ form.as_p }}#}
-                        {% include 'includes/captcha.html' %}
+                        {% include 'includes/captcha_image.html' %}
 {#                        {{ captcha_form.as_p }}#}
                         {% include 'includes/captcha_form.html' %}
+{#                        <div class="g-recaptcha" data-sitekey="6LfQLMQaAAAAAL3U0Dyc1rw29XiqdXnw-0zs9zfy"></div>#}
                     </form>
+{#                    <script src='https://www.google.com/recaptcha/api.js'></script>#}
 
                     <button type="submit" class="btn btn-primary btn-block" id="login-button"
                             name="login-button" value="login-button" form="login-form">
                         Log in
                     </button>
                 </div>
-                <div class="card-footer text-muted text-center">
-                    New to Boards? <a href="{% url 'accounts:signup' %}">Sign up</a>
-                </div>
+                {% if messages %}
+                    {% for message in messages %}
+                        <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+                    {% endfor %}
+                {% endif %}
+{#                <div class="card-footer text-muted text-center">#}
+{#                    New to Boards? <a href="{% url 'accounts:signup' %}">Sign up</a>#}
+{#                </div>#}
             </div>
         </div>
     </div>

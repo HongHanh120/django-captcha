@@ -3,26 +3,21 @@
 {% load static %}
 
 <div class="form-group form-row" id="captcha-div">
-{#    <form method="post" novalidate enctype="multipart/form-data" id="captcha-form">#}
-{#        {% csrf_token %}#}
-    {% if image_url %}
+    {% if image %}
         <img class="img-responsive watch-right" alt="not found" id="captcha-image"
-             src="{{ MEDIA_URL }}{{ image_url }}">
+             src="data:image/png; base64, {{ image }}">
     {% endif %}
     <div class="col-1 text-center" style="margin: 5px; ">
         <button type="button" {% load static %} class="btn-image col" id="reload" name="reload">
             <img src="{% static 'img/refresh.png' %}" alt="reload" style="width:24px">
         </button>
     </div>
-{#        {{ form.as_p }}#}
+    <form method="post" novalidate enctype="multipart/form-data" id="captcha-form">
+        {% csrf_token %}
+        {{ form.as_p }}
 {#        {% include 'includes/form.html' with form=form %}#}
-{#        <div class="form-group align-items-center" style="display:flex; flex-direction: row">#}
-{#            <label class="text-left" for="type-the-captcha" style="clear: both;">Captcha:</label>#}
-{#            <input type="text" name="captcha_code" style="margin-left: 10px" required#}
-{#                   class="form-control col-form-label-sm" id="type-the-captcha">#}
-{#        </div>#}
-{#        <button type="submit" id="submit" form="captcha-form">Submit</button>#}
-{#    </form>#}
+        <button type="submit" id="submit" form="captcha-form">Submit</button>
+    </form>
 </div>
 
 <script type="text/javascript">
@@ -63,7 +58,8 @@
                 type: "GET",
                 url: path,
                 success: function (response) {
-                    $("#captcha-image").attr('src', response.image_url)
+                    {#var image = response.image#}
+                    $("#captcha-image").attr('src', "data:image/png; base64,"+ response.image)
                     console.log("success");
                 },
             })

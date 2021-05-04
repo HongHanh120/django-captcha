@@ -4,9 +4,9 @@
 
 <div class="form-group form-row" id="captcha-div">
 
-    {% if image_url %}
+    {% if image %}
         <img class="img-responsive watch-right" alt="not found" id="captcha-image"
-             src="{{ MEDIA_URL }}{{ image_url }}">
+             src="data:image/png; base64, {{ image }}">
     {% endif %}
     <div class="col-1 text-center" style="margin: 5px; ">
         <button type="button" {% load static %} class="btn-image col" id="reload" name="reload">
@@ -31,7 +31,7 @@
                 type: "GET",
                 url: path,
                 success: function (response) {
-                    $("#captcha-image").attr('src', response.image_url)
+                    $("#captcha-image").attr('src', "data:image/png; base64,"+ response.image)
                     console.log("success");
                 },
             })

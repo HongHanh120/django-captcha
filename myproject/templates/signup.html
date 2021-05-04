@@ -12,7 +12,7 @@
                         {% csrf_token %}
                         {% include 'includes/form.html' %}
                     </form>
-                    {% include 'includes/captcha.html' %}
+                    {% include 'includes/captcha_image.html' %}
                     <form method="post" novalidate id="captcha-form" action="/signup/">
                         {% csrf_token %}
                     </form>
