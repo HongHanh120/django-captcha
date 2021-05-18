@@ -1,9 +1,6 @@
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-
 {% load static %}
 
 <div class="form-group form-row" id="captcha-div">
-
     {% if image %}
         <img class="img-responsive watch-right" alt="not found" id="captcha-image"
              src="data:image/png; base64, {{ image }}">
@@ -26,7 +23,6 @@
         $("#reload").click(function (event) {
             event.preventDefault();
             var path = window.location.href;
-            {#console.log(path);#}
             $.ajax({
                 type: "GET",
                 url: path,

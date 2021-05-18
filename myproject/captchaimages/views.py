@@ -1,12 +1,12 @@
 import base64
 import json
 import requests
+from datetime import datetime
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from urllib.parse import urlparse
 from django.core.files.base import ContentFile
 
-from .models import Image
 from .forms import CaptchaForm
 
 
@@ -91,6 +91,7 @@ def home(request):
 
 def get_captcha_image(request):
     r = requests.get('http://127.0.0.1:8000/api/generate-image/')
+
     data = json.loads(json.dumps(r.json()))['data']
     remote_image_url = data['remote_url']
     remote_image_id = data['remote_id']
@@ -127,7 +128,6 @@ def display_image(request):
         if request.is_ajax():
             return JsonResponse({'image': image}, safe=False)
         context = {
-            # 'image': image,
             'image': image,
             'form': form,
         }
@@ -150,11 +150,11 @@ def display_image(request):
             }
 
             try:
-                response = requests.post('http://127.0.0.1:8000/api/check-answer/', data=data, headers=headers)
+                response = requests.post('http://127.0.0.1:8000/api/validate-captcha/', data=data, headers=headers)
                 response.raise_for_status()
                 response_json = response.json()
-                result = response_json['result']
-                print(result)
+                # result = response_json['response']
+                print(response_json)
 
             except requests.HTTPError as http_err:
                 print(f'HTTP error occurred: {http_err}')

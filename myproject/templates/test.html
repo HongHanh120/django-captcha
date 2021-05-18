@@ -66,4 +66,24 @@
         })
     });
 </script>
+{#<script type="text/javascript">#}
+{#    var csrf_token = $("input[name=csrfmiddlewaretoken]").val();#}
+{#    $(function () {#}
+{#        $('#login-button').submit(function (event) {#}
+{#            event.preventDefault();#}
+{#            var path = window.location.href;#}
+{#            $.ajax({#}
+{#                type: "POST",#}
+{#                url: path,#}
+{#                data: {#}
+{#                    csrfmiddlewaretoken: csrf_token,#}
+{#                },#}
+{#                success: function () {#}
+{#                    $("#id_captcha-captcha").attr('value', '')#}
+{#                    console.log("success");#}
+{#                },#}
+{#            })#}
+{#        })#}
+{#    });#}
+{#</script>#}
 

@@ -16,5 +16,17 @@ def input_class(bound_field):
             css_class = 'is-invalid'
         elif field_type(bound_field) != 'PasswordInput':
             css_class = 'is-valid'
+    return 'form-control {}'.format(css_class)
+
+
+@register.filter
+def input_captcha_class(bound_field):
+    css_class = ''
+    if bound_field.form.is_bound:
+        if bound_field.errors:
+            css_class = 'is-invalid'
+            # bound_field.form = {}
+        elif field_type(bound_field) != 'TextInput':
+            css_class = 'is-valid'
 
     return 'form-control {}'.format(css_class)
