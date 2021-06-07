@@ -90,17 +90,35 @@ def home(request):
 
 
 def get_captcha_image(request):
-    r = requests.get('http://127.0.0.1:8000/api/generate-image/')
+    # r = requests.get('http://127.0.0.1:8000/api/generate-image/')
 
-    data = json.loads(json.dumps(r.json()))['data']
-    remote_image_url = data['remote_url']
-    remote_image_id = data['remote_id']
+    try:
+        r = requests.get('http://127.0.0.1:8000/api/generate-image/')
+        request.session['response'] = r
+        print(r.json())
+    except requests.HTTPError as http_err:
+        print(f'HTTP error occurred: {http_err}')
+    except Exception as err:
+        print(f'Other error occurred: {err}')
+    response = request.session.get('response')
+    if response is not None:
+        data_image = json.loads(json.dumps(response.json())).get('data')
+        image_url = data_image['remote_url']
+        # print(image_url)
+        remote_image_id = data_image['remote_id']
+    else:
+        image_url = '/home/hanh/Desktop/myproject/myproject/static/img/error-symbol.png'
+        remote_image_id = None
+
+    # data = json.loads(json.dumps(r.json()))['data']
+    # remote_image_url = data['remote_url']
+    # remote_image_id = data['remote_id']
 
     # print(data['data'])
     # image = Image(remote_id=remote_image_id)
     # name = urlparse(remote_image_url).path.split('/')[-1]
 
-    with open(remote_image_url, 'rb') as f:
+    with open(image_url, 'rb') as f:
         image_data = base64.b64encode(f.read()).decode('utf-8')
         # image_data = f.read()
     # image = Image()

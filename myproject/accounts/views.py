@@ -14,19 +14,36 @@ from .forms import SignUpForm
 
 def get_captcha_image(request):
     # Yêu cầu sinh ảnh CAPTCHA là lấy dữ liệu thông qua API '/api/generate-image/'
-    r = requests.get('http://127.0.0.1:8000/api/generate-image/')
-    data_image = json.loads(json.dumps(r.json()))['data']
-    remote_image_url = data_image['remote_url']
-    remote_image_id = data_image['remote_id']
+    try:
+        r = requests.get('http://127.0.0.1:8000/api/generate-image/')
+        data_image = json.loads(json.dumps(r.json()))['data']
+        image_url = data_image['remote_url']
+        remote_image_id = data_image['remote_id']
+        with open(image_url, 'rb') as f:
+            image_data = base64.b64encode(f.read()).decode('utf-8')
 
-    with open(remote_image_url, 'rb') as f:
-        image_data = base64.b64encode(f.read()).decode('utf-8')
+        data = {
+            'image': image_data,
+            'image_id': remote_image_id
+        }
+        return data
+    except requests.HTTPError as http_err:
+        print(f'HTTP error occurred: {http_err}')
+    except Exception as err:
+        print(f'Other error occurred: {err}')
 
-    data = {
-        'image': image_data,
-        'image_id': remote_image_id
-    }
-    return data
+        image_url = '/home/hanh/Desktop/myproject/myproject/static/img/error-symbol.png'
+        remote_image_id = None
+
+        with open(image_url, 'rb') as f:
+            image_data = base64.b64encode(f.read()).decode('utf-8')
+
+        data = {
+            'image': image_data,
+            'image_id': remote_image_id
+        }
+        return data
+
 
 # def signup(request):
 #     image = get_captcha_image(request)
@@ -50,11 +67,17 @@ def get_captcha_image(request):
 def login(request):
     if request.method == "GET":
         data = get_captcha_image(request)
-        image = data['image']
-        request.session['remote_id'] = data['image_id']
+        image = data.get('image')
+        request.session['remote_id'] = data.get('image_id')
 
         form = AuthenticationForm(prefix='login')
         captcha_form = CaptchaForm(prefix='captcha')
+
+        error_image_url = '/home/hanh/Desktop/myproject/myproject/static/img/error-symbol.png'
+        with open(error_image_url, 'rb') as f:
+            image_data = base64.b64encode(f.read()).decode('utf-8')
+        if image_data == image:
+            messages.error(request, 'The captcha webservice is not active. Please come in another time')
 
         if request.is_ajax():
             return JsonResponse({'image': image}, safe=False)
@@ -90,8 +113,8 @@ def login(request):
             except Exception as err:
                 print(f'Other error occurred: {err}')
 
-            result = request.session['result']
-            error_code = request.session['error_code']
+            result = request.session.get('result')
+            error_code = request.session.get('error_code')
 
             if result == 'fail' and error_code == 'missing_input_answer':
                 return HttpResponse('The answer parameter is missing')
@@ -112,7 +135,7 @@ def login(request):
                     elif result == "fail" and error_code == "timeout_or_duplicate":
                         messages.error(request, 'The captcha code is no longer valid.')
 
-        captcha_form = CaptchaForm(prefix='captcha')
+                captcha_form = CaptchaForm(prefix='captcha')
 
         data = get_captcha_image(request)
         image = data['image']
